@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório de Livro de Cartório</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #a1a1a1;
+      margin: 0;
+      padding: 20px;
+    }
+
+    #header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #logo {
+      max-width: 100px;
+    }
+
+    #reportContainer {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+        #bookType {     
+     width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    #relatorio {
+      margin-top: 20px;
+    }
+
+    .relatorioAntigo {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+
+    .relatorioAntigo button {
+      background-color: #f44336;
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <img id="logo" src="LogoCTX.png" alt="Logo">
+  <h1>Relatório de Autocorreição</h1>
+</div>
+
+<div id="reportContainer">
+  <label for="bookNumber">Número do Livro:</label>
+  <input type="text" id="bookNumber" placeholder="Digite o número do livro">
+
+  <label for="bookType">Tipo de Livro:</label>
+  <select id="bookType">
+    <option value="Nascimento">Nascimento</option>
+    <option value="Casamento">Casamento</option>
+    <option value="Óbito">Óbito</option>
+    <option value="Edital">Edital</option>
+    <option value="CasamentoBA">Casamento BA</option>
+    <option value="ÓbitoCA">Óbito CA</option>
+    <option value="Escrituras Diversas">Escrituras Diversas</option>
+    <option value="Testamento">Testamento</option>
+    <option value="Compra e Venda">Compra e Venda</option>
+    <option value="Emancipação">Emancipação</option>
+    <option value="Ata Notarial">Ata Notarial</option>
+    <option value="Procuração">Procuração</option>
+    <option value="Substabelecimento">Substabelecimento</option>
+  </select>
+
+  <label for="startPage">Folha Inicial:</label>
+  <input type="number" id="startPage" placeholder="Digite a folha inicial">
+
+  <label for="endPage">Folha Final:</label>
+  <input type="number" id="endPage" placeholder="Digite a folha final">
+
+  <label for="openDate">Data de Abertura:</label>
+  <input type="date" id="openDate">
+
+  <label for="closeDate">Data de Encerramento:</label>
+  <input type="date" id="closeDate">
+
+  <label for="correicaoPage">Folha Vista em Correição:</label>
+  <input type="number" id="correicaoPage" placeholder="Digite a folha vista em correição">
+
+  <label for="correicaoDate">Data da Correição:</label>
+  <input type="date" id="correicaoDate">
+
+  <label for="canceledPages">Folhas Canceladas:</label>
+  <input type="text" id="canceledPages" placeholder="Digite as folhas canceladas separadas por vírgula">
+
+  <button onclick="gerarRelatorio()">Gerar Relatório</button>
+  <button onclick="excluirRelatorios()">Excluir Relatórios</button>
+
+  <div id="relatorio"></div>
+
+  <div id="relatoriosAntigos"></div>
+</div>
+
+<div>
+  <p>Criado por: Evilly Brito (C)</p>
+</div>
+
+<script>
+  function gerarRelatorio() {
+    const bookNumber = document.getElementById('bookNumber').value;
+    const bookType = document.getElementById('bookType').value;
+    const startPage = document.getElementById('startPage').value;
+    const endPage = document.getElementById('endPage').value;
+    const openDate = document.getElementById('openDate').value;
+    const closeDate = document.getElementById('closeDate').value;
+    const correicaoPage = document.getElementById('correicaoPage').value;
+    const correicaoDate = document.getElementById('correicaoDate').value;
+    const canceledPages = document.getElementById('canceledPages').value;
+
+    const relatorio = `
+      <h2>Relatório do Livro ${bookNumber}</h2>
+      <p><strong>Tipo de Livro:</strong> ${bookType}</p>
+      <p><strong>Folha Inicial:</strong> ${startPage}</p>
+      <p><strong>Folha Final:</strong> ${endPage}</p>
+      <p><strong>Data de Abertura:</strong> ${openDate}</p>
+      <p><strong>Data de Encerramento:</strong> ${closeDate || 'Livro ainda aberto'}</p>
+      <p><strong>Folha Vista em Correição:</strong> ${correicaoPage || 'Nenhuma folha vista em correição'}</p>
+      <p><strong>Data da Correição:</strong> ${correicaoDate || 'Correição ainda não realizada'}</p>
+      <p><strong>Folhas Canceladas:</strong> ${canceledPages || 'Nenhuma folha cancelada'}</p>
+    `;
+
+    // Armazenar o relatório no localStorage
+    const relatoriosAntigos = JSON.parse(localStorage.getItem('relatorios')) || [];
+    const novoRelatorio = {
+      livro: bookNumber,
+      tipo: bookType,
+      conteudo: relatorio
+    };
+    relatoriosAntigos.push(novoRelatorio);
+    localStorage.setItem('relatorios', JSON.stringify(relatoriosAntigos));
+
+    document.getElementById('relatorio').innerHTML = relatorio;
+
+    // Limpar campos após a geração do relatório
+    limparCampos();
+  }
+
+  function excluirRelatorios() {
+    // Limpar relatórios antigos no localStorage
+    localStorage.removeItem('relatorios');
+    document.getElementById('relatoriosAntigos').innerHTML = 'Relatórios antigos excluídos.';
+  }
+
+  function limparCampos() {
+    document.getElementById('bookNumber').value = '';
+    document.getElementById('bookType').value = 'Nascimento';
+    document.getElementById('startPage').value = '';
+    document.getElementById('endPage').value = '';
+    document.getElementById('openDate').value = '';
+    document.getElementById('closeDate').value = '';
+    document.getElementById('correicaoPage').value = '';
+    document.getElementById('correicaoDate').value = '';
+    document.getElementById('canceledPages').value = '';
+  }
+</script>
+
+<!-- Exibir relatórios antigos -->
+<script>
+  window.onload = function() {
+    const relatoriosAntigos = JSON.parse(localStorage.getItem('relatorios')) || [];
+
+    for (const relatorio of relatoriosAntigos) {
+      const divRelatorioAntigo = document.createElement('div');
+      divRelatorioAntigo.className = 'relatorioAntigo';
+      divRelatorioAntigo.innerHTML = `
+        <h2>Relatório do Livro ${relatorio.livro}</h2>
+        <p><strong>Tipo de Livro:</strong> ${relatorio.tipo}</p>
+        ${relatorio.conteudo}
+        <button onclick="excluirRelatorioAntigo('${relatorio.livro}')">Excluir</button>
+      `;
+      document.getElementById('relatoriosAntigos').appendChild(divRelatorioAntigo);
+    }
+  }
+
+  function excluirRelatorioAntigo(livro) {
+    const relatoriosAntigos = JSON.parse(localStorage.getItem('relatorios')) || [];
+    const novosRelatorios = relatoriosAntigos.filter(relatorio => relatorio.livro !== livro);
+    localStorage.setItem('relatorios', JSON.stringify(novosRelatorios));
+    window.location.reload(); // Recarregar a página para exibir a lista atualizada
+  }
+</script>
+
+</body>
+</html>
